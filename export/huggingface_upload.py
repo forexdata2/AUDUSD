@@ -73,7 +73,8 @@ def local_entries(folder: Path):
         m=DAILY_RE.match(p.name)
         if not m: continue
         sym=m.group("symbol").upper(); day=m.group("day")
-        rel=f"{sym}/{sym}_{day}.BIN"
+        folder_name = "AUDUSD"
+        rel = f"{folder_name}/{sym}_{day}.BIN"
         out[rel]=Entry(sym, rel, day, p.stat().st_size, p)
     return out
 
@@ -110,6 +111,7 @@ def upload_batch(repo_id, source_dir: Path, token, repo_type="dataset"):
         retry("upload_folder", lambda: api.upload_folder(repo_id=repo_id, repo_type=repo_type, folder_path=stage, path_in_repo="", token=token, commit_message=f"Upload daily tick data ({len(changed)} files)"))
 
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("source_dir"); ap.add_argument("--repo-id", default=os.getenv("HF_DATASET","Esmaeil9ss/Tickdata")); ap.add_argument("--repo-type", default="dataset"); ap.add_argument("--token", default=os.getenv("HF_TOKEN")); a=ap.parse_args()
+    ap=argparse.ArgumentParser(); ap.add_argument("source_dir"); ap.add_argument("--repo-id", default=os.getenv("HF_DATASET","Esmaeil9ss/Tickdata")); ap.add_argument("--repo-type", default="dataset"); ap.add_argument("--token", default=os.getenv("HF_TOKEN"));
+    a=ap.parse_args();
     upload_batch(a.repo_id, Path(a.source_dir), a.token, a.repo_type); return 0
 if __name__ == "__main__": raise SystemExit(main())
